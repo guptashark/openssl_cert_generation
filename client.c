@@ -15,7 +15,7 @@ int main(void) {
 
   // fn ptr to the verify callback.
   int (*ssl_verify_cb)(int preverify_ok, X509_STORE_CTX *x509_ctx);
-  ssl_verify_cb = NULL;
+  ssl_verify_cb = ssl_verify_cb_01;
  
   int ret = 0;
 
