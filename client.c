@@ -7,16 +7,24 @@
 void dump_ssl_errs_v_01(void);
 void dump_ssl_errs_v_02(void);
 
+int ssl_verify_cb_01(int preverify_ok, X509_STORE_CTX *x509_ctx);
+
 int main(void) {
 
   void (*dump_ssl_errs)(void) = dump_ssl_errs_v_02;
+
+  // fn ptr to the verify callback.
+  int (*ssl_verify_cb)(int preverify_ok, X509_STORE_CTX *x509_ctx);
+  ssl_verify_cb = NULL;
  
   int ret = 0;
 
 
   SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
-  ret = SSL_CTX_load_verify_locations(ctx, "ca_bad_name.crt", NULL);
+  ret = SSL_CTX_load_verify_locations(ctx, "ca_01.crt", NULL);
   if (ret == 0) dump_ssl_errs();
+
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, ssl_verify_cb);
 
   BIO *bio = BIO_new(BIO_s_connect());
   BIO_set_conn_hostname(bio, "127.0.0.1");
@@ -56,4 +64,10 @@ void dump_ssl_errs_v_02(void) {
 
     printf("error:%.8lX:%s:%s:%s\n", err, lib_name, func_name, reason);
   } while (err != 0);
+}
+
+int ssl_verify_cb_01(int preverify_ok, X509_STORE_CTX *x509_ctx) {
+  (void)preverify_ok;
+  (void)x509_ctx;
+  return 1;
 }
