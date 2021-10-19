@@ -18,12 +18,14 @@ int main(void) {
   ssl_verify_cb = NULL;
  
   int ret = 0;
-
+  (void)ret;
 
   SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
-  ret = SSL_CTX_load_verify_locations(ctx,
+
+  X509_STORE *x509_store = SSL_CTX_get_cert_store(ctx);
+
+  X509_STORE_load_locations(x509_store,
       "root_04/ca/intermediate/certs/ca-chain.cert.pem", NULL);
-  if (ret == 0) dump_ssl_errs();
 
   SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, ssl_verify_cb);
 
