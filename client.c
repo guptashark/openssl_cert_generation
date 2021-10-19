@@ -15,13 +15,14 @@ int main(void) {
 
   // fn ptr to the verify callback.
   int (*ssl_verify_cb)(int preverify_ok, X509_STORE_CTX *x509_ctx);
-  ssl_verify_cb = ssl_verify_cb_01;
+  ssl_verify_cb = NULL;
  
   int ret = 0;
 
 
   SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
-  ret = SSL_CTX_load_verify_locations(ctx, "ca_01.crt", NULL);
+  ret = SSL_CTX_load_verify_locations(ctx,
+      "root_04/ca/intermediate/certs/ca-chain.cert.pem", NULL);
   if (ret == 0) dump_ssl_errs();
 
   SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, ssl_verify_cb);
@@ -34,8 +35,11 @@ int main(void) {
   SSL_set_bio(ssl, bio, bio);
 
   SSL_connect(ssl);
+  long verify_err = SSL_get_verify_result(ssl);
+  printf("verify error on SSL_connect: %lu\n", verify_err);
+  dump_ssl_errs();
 
-  const char *msg = "Hello World!\n";
+  const char *msg = "Hello World!! It's working with automated script!\n";
   int msg_len = strlen(msg);
 
   SSL_write(ssl, msg, msg_len);
