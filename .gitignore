@@ -1,3 +1,17 @@
 *.o
 *.out
 *.swp
+
+root/**
+root_02/**
+root_03/**
+root_04/**
+root_05/**
+root_06/**
+root_07/**
+root_08/**
+root_09/**
+
+goals.txt
+notes.txt
+questions.txt
