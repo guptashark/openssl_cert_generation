@@ -11,6 +11,16 @@ root_06/**
 root_07/**
 root_08/**
 root_09/**
+root_10/**
+root_11/**
+
+*.crt
+*.csr
+*.key
+
+cert_generation/serial_ca
+cert_generation/serial_intermediate
+
 
 goals.txt
 notes.txt

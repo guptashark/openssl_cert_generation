@@ -24,7 +24,7 @@ int main(void) {
 
   X509_STORE *x509_store = SSL_CTX_get_cert_store(ctx);
 
-  X509_STORE_load_locations(x509_store, "root_09/ca-chain.crt", NULL);
+  X509_STORE_load_locations(x509_store, "cert_generation/ca_chain.crt", NULL);
 
   SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, ssl_verify_cb);
 
