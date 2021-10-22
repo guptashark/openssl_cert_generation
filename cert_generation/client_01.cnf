@@ -15,7 +15,7 @@ organizationalUnitName          = client_01
 commonName                      = www.client_01.com
 emailAddress                    = guptashark@protonmail.com
 
-[ usr_cert ]
+[ v3_client_01 ]
 # Extensions for client certificates (`man x509v3_config`).
 basicConstraints = CA:FALSE
 nsCertType = client, email
