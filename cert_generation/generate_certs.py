@@ -1,5 +1,15 @@
 import subprocess
 
+cert_structure = {}
+cert_structure["ca"] = ["intermediate_01", "intermediate_02"]
+cert_structure["intermediate_01"] = ["server_01", "client_01"]
+cert_structure["intermediate_02"] = ["server_02", "client_02"]
+cert_structure["server_01"] = []
+cert_structure["server_02"] = []
+cert_structure["client_01"] = []
+cert_structure["client_02"] = []
+
+
 def create_serial_files():
   f = open("serial_ca", "w");
   f.write("1000")
@@ -19,13 +29,8 @@ def create_rsa_key(name):
 
 # Create the keys
 def create_rsa_keys():
-  create_rsa_key("ca")
-  create_rsa_key("intermediate_01")
-  create_rsa_key("intermediate_02")
-  create_rsa_key("server_01")
-  create_rsa_key("server_02")
-  create_rsa_key("client_01")
-  create_rsa_key("client_02")
+  for cert_name in cert_structure.keys():
+    create_rsa_key(cert_name)
 
 # Create the CA cert
 def create_ca_cert():
@@ -51,14 +56,11 @@ def create_cert(ca_name, req_name):
       "-out", req_name + ".crt"])
 
 def create_certs():
-  create_cert("ca", "intermediate_01")
-  create_cert("ca", "intermediate_02")
+  for signer, signees in cert_structure.items():
+    if len(signees) > 0:
+      for cert_name in signees:
+        create_cert(signer, cert_name)
 
-  create_cert("intermediate_01", "server_01")
-  create_cert("intermediate_01", "client_01")
-
-  create_cert("intermediate_02", "server_02")
-  create_cert("intermediate_02", "client_02")
 
 def verify_cert(ca_name, intermediate_name, leaf_name):
   subprocess.run(["openssl", "verify", "-verbose",
