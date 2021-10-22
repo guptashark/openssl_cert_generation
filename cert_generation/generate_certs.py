@@ -4,15 +4,25 @@ f = open("serial_ca", "w");
 f.write("1000")
 f.close()
 
-f = open("serial_intermediate", "w");
+f = open("serial_intermediate_01", "w");
+f.write("1000")
+f.close()
+
+f = open("serial_intermediate_02", "w");
 f.write("1000")
 f.close()
 
 # Create the keys
 subprocess.run(["openssl", "genrsa", "-out", "ca.key", "2048"])
-subprocess.run(["openssl", "genrsa", "-out", "intermediate.key", "2048"])
-subprocess.run(["openssl", "genrsa", "-out", "svr.key", "2048"])
-subprocess.run(["openssl", "genrsa", "-out", "client.key", "2048"])
+
+subprocess.run(["openssl", "genrsa", "-out", "intermediate_01.key", "2048"])
+subprocess.run(["openssl", "genrsa", "-out", "intermediate_02.key", "2048"])
+
+subprocess.run(["openssl", "genrsa", "-out", "server_01.key", "2048"])
+subprocess.run(["openssl", "genrsa", "-out", "server_02.key", "2048"])
+
+subprocess.run(["openssl", "genrsa", "-out", "client_01.key", "2048"])
+subprocess.run(["openssl", "genrsa", "-out", "client_02.key", "2048"])
 
 # Create the CA cert
 subprocess.run(["openssl", "req", "-config", "ca_openssl.cnf",
@@ -20,54 +30,104 @@ subprocess.run(["openssl", "req", "-config", "ca_openssl.cnf",
     "-extensions", "v3_ca", "-out", "ca.crt"])
 
 
-# Create the intermediate csr.
-subprocess.run(["openssl", "req", "-config", "intermediate_openssl.cnf",
+# Create the intermediate_01 csr.
+subprocess.run(["openssl", "req", "-config", "intermediate_01.cnf",
     "-new", "-sha256",
-    "-key", "intermediate.key",
-    "-out", "intermediate.csr"])
+    "-key", "intermediate_01.key",
+    "-out", "intermediate_01.csr"])
 
-
-# Sign the intermediate cert.
+# Sign the intermediate_01 cert.
 subprocess.run(["openssl", "x509", "-req",
-    "-extfile", "intermediate_openssl.cnf",
+    "-extfile", "intermediate_01.cnf",
     "-extensions", "v3_intermediate_ca",
     "-days", "3650",
-    "-in", "intermediate.csr",
+    "-in", "intermediate_01.csr",
     "-CAkey", "ca.key",
     "-CA", "ca.crt", 
     "-CAserial", "serial_ca",
-    "-out", "intermediate.crt"])
+    "-out", "intermediate_01.crt"])
 
-# Create the server csr.
-subprocess.run(["openssl", "req", "-config", "server_openssl.cnf",
-    "-key", "svr.key",
+# Create the intermediate_02 csr.
+subprocess.run(["openssl", "req", "-config", "intermediate_02.cnf",
     "-new", "-sha256",
-    "-out", "svr.csr"])
+    "-key", "intermediate_02.key",
+    "-out", "intermediate_02.csr"])
 
-# Sign the server cert.
+# Sign the intermediate_02 cert.
 subprocess.run(["openssl", "x509", "-req",
-    "-extfile", "server_openssl.cnf",
+    "-extfile", "intermediate_02.cnf",
+    "-extensions", "v3_intermediate_ca",
+    "-days", "3650",
+    "-in", "intermediate_02.csr",
+    "-CAkey", "ca.key",
+    "-CA", "ca.crt", 
+    "-CAserial", "serial_ca",
+    "-out", "intermediate_02.crt"])
+
+# Create the server_01 csr.
+subprocess.run(["openssl", "req", "-config", "server_01.cnf",
+    "-key", "server_01.key",
+    "-new", "-sha256",
+    "-out", "server_01.csr"])
+
+# Sign the server_01 cert.
+subprocess.run(["openssl", "x509", "-req",
+    "-extfile", "server_01.cnf",
     "-extensions", "server_cert",
     "-days", "3000",
-    "-in", "svr.csr",
-    "-CAkey", "intermediate.key",
-    "-CA", "intermediate.crt", 
-    "-CAserial", "serial_intermediate",
-    "-out", "svr.crt"])
+    "-in", "server_01.csr",
+    "-CAkey", "intermediate_01.key",
+    "-CA", "intermediate_01.crt", 
+    "-CAserial", "serial_intermediate_01",
+    "-out", "server_01.crt"])
 
-# Create the client csr.
-subprocess.run(["openssl", "req", "-config", "client_openssl.cnf",
-    "-key", "client.key",
+# Create the server_02 csr.
+subprocess.run(["openssl", "req", "-config", "server_02.cnf",
+    "-key", "server_02.key",
     "-new", "-sha256",
-    "-out", "client.csr"])
+    "-out", "server_02.csr"])
 
-# Sign the client cert.
+# Sign the server_02 cert.
 subprocess.run(["openssl", "x509", "-req",
-    "-extfile", "client_openssl.cnf",
+    "-extfile", "server_02.cnf",
+    "-extensions", "server_cert",
+    "-days", "3000",
+    "-in", "server_02.csr",
+    "-CAkey", "intermediate_02.key",
+    "-CA", "intermediate_02.crt", 
+    "-CAserial", "serial_intermediate_02",
+    "-out", "server_02.crt"])
+
+# Create the client_01 csr.
+subprocess.run(["openssl", "req", "-config", "client_01.cnf",
+    "-key", "client_01.key",
+    "-new", "-sha256",
+    "-out", "client_01.csr"])
+
+# Sign the client_01 cert.
+subprocess.run(["openssl", "x509", "-req",
+    "-extfile", "client_01.cnf",
     "-extensions", "usr_cert",
     "-days", "3000",
-    "-in", "client.csr",
-    "-CAkey", "intermediate.key",
-    "-CA", "intermediate.crt", 
-    "-CAserial", "serial_intermediate",
-    "-out", "client.crt"])
+    "-in", "client_01.csr",
+    "-CAkey", "intermediate_01.key",
+    "-CA", "intermediate_01.crt", 
+    "-CAserial", "serial_intermediate_01",
+    "-out", "client_01.crt"])
+
+# Create the client_02 csr.
+subprocess.run(["openssl", "req", "-config", "client_02.cnf",
+    "-key", "client_02.key",
+    "-new", "-sha256",
+    "-out", "client_02.csr"])
+
+# Sign the client_02 cert.
+subprocess.run(["openssl", "x509", "-req",
+    "-extfile", "client_02.cnf",
+    "-extensions", "usr_cert",
+    "-days", "3000",
+    "-in", "client_02.csr",
+    "-CAkey", "intermediate_02.key",
+    "-CA", "intermediate_02.crt", 
+    "-CAserial", "serial_intermediate_02",
+    "-out", "client_02.crt"])

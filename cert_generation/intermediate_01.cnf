@@ -74,8 +74,8 @@ countryName                     = US
 stateOrProvinceName             = Michigan
 localityName                    = Detroit
 0.organizationName              = Pyramid Solutions
-organizationalUnitName          = Unit 2
-commonName                      = www.intermediate.com
+organizationalUnitName          = intermediate_01
+commonName                      = www.intermediate_01.com
 emailAddress                    = guptashark@protonmail.com
 
 # Optionally, specify some defaults.
