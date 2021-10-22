@@ -60,27 +60,19 @@ def create_certs():
   create_cert("intermediate_02", "server_02")
   create_cert("intermediate_02", "client_02")
 
+def verify_cert(ca_name, intermediate_name, leaf_name):
+  subprocess.run(["openssl", "verify", "-verbose",
+      "-CAfile", ca_name + ".crt",
+      "-untrusted", intermediate_name + ".crt",
+      leaf_name + ".crt"])
+
 # Run the verification functions.
 def verify_certs():
-  subprocess.run(["openssl", "verify", "-verbose",
-      "-CAfile", "ca.crt",
-      "-untrusted", "intermediate_01.crt",
-      "server_01.crt"])
+  verify_cert("ca", "intermediate_01", "server_01")
+  verify_cert("ca", "intermediate_02", "server_02")
 
-  subprocess.run(["openssl", "verify", "-verbose",
-      "-CAfile", "ca.crt",
-      "-untrusted", "intermediate_02.crt",
-      "server_02.crt"])
-
-  subprocess.run(["openssl", "verify", "-verbose",
-      "-CAfile", "ca.crt",
-      "-untrusted", "intermediate_01.crt",
-      "client_01.crt"])
-
-  subprocess.run(["openssl", "verify", "-verbose",
-      "-CAfile", "ca.crt",
-      "-untrusted", "intermediate_02.crt",
-      "client_02.crt"])
+  verify_cert("ca", "intermediate_01", "client_01")
+  verify_cert("ca", "intermediate_02", "client_02")
 
 
 def generate_all():
