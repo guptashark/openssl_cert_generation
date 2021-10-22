@@ -1,5 +1,6 @@
 import subprocess
 
+"""
 f = open("serial_ca", "w");
 f.write("1000")
 f.close()
@@ -131,3 +132,25 @@ subprocess.run(["openssl", "x509", "-req",
     "-CA", "intermediate_02.crt", 
     "-CAserial", "serial_intermediate_02",
     "-out", "client_02.crt"])
+
+"""
+# Run the verification functions.
+subprocess.run(["openssl", "verify", "-verbose",
+    "-CAfile", "ca.crt",
+    "-untrusted", "intermediate_01.crt",
+    "server_01.crt"])
+
+subprocess.run(["openssl", "verify", "-verbose",
+    "-CAfile", "ca.crt",
+    "-untrusted", "intermediate_02.crt",
+    "server_02.crt"])
+
+subprocess.run(["openssl", "verify", "-verbose",
+    "-CAfile", "ca.crt",
+    "-untrusted", "intermediate_01.crt",
+    "client_01.crt"])
+
+subprocess.run(["openssl", "verify", "-verbose",
+    "-CAfile", "ca.crt",
+    "-untrusted", "intermediate_02.crt",
+    "client_02.crt"])
