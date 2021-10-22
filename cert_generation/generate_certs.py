@@ -9,19 +9,12 @@ cert_structure["server_02"] = []
 cert_structure["client_01"] = []
 cert_structure["client_02"] = []
 
-
 def create_serial_files():
-  f = open("serial_ca", "w");
-  f.write("1000")
-  f.close()
-
-  f = open("serial_intermediate_01", "w");
-  f.write("1000")
-  f.close()
-
-  f = open("serial_intermediate_02", "w");
-  f.write("1000")
-  f.close()
+  for signer, signees in cert_structure.items():
+    if len(signees) > 0:
+      f = open("serial_" + signer, "w");
+      f.write("1000")
+      f.close()
 
 def create_rsa_key(name):
   keyfile = name + ".key"
@@ -60,7 +53,6 @@ def create_certs():
     if len(signees) > 0:
       for cert_name in signees:
         create_cert(signer, cert_name)
-
 
 def verify_cert(ca_name, intermediate_name, leaf_name):
   subprocess.run(["openssl", "verify", "-verbose",
